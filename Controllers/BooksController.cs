@@ -91,7 +91,7 @@ public class BooksController : ControllerBase
 
         if (await BookExistsAsync(id: bookID))
         {
-            return Conflict(error: $"Book with ID = {bookID} is existed");
+            return Conflict(error: $"Book with ID = {bookID} is duplicate!!");
         }
 
         await _context.Books.AddAsync(entity: book);
