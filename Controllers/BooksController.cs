@@ -87,6 +87,13 @@ public class BooksController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Book>> CreateBookAsync(Book book)
     {
+        var bookID = book.ID;
+
+        if (await BookExistsAsync(id: bookID))
+        {
+            return Conflict(error: $"Book with ID = {bookID} is existed");
+        }
+
         await _context.Books.AddAsync(entity: book);
 
         try
@@ -104,5 +111,6 @@ public class BooksController : ControllerBase
             value: book);
     }
 
-    private async Task<bool> BookExistsAsync(int id) => await _context.Books.AnyAsync(predicate: book => book.ID == id);
+    private async Task<bool> BookExistsAsync(int id) =>
+        await _context.Books.AnyAsync(predicate: book => book.ID == id);
 }

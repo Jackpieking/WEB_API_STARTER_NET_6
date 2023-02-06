@@ -22,12 +22,9 @@ services
         var databaseOptions = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
 
         dbContextOptionsBuilder
-            .UseSqlServer(connectionString: databaseOptions.ConnectionString, sqlServerOptionsAction: sqlServerActions =>
-            {
-                sqlServerActions
-                    .EnableRetryOnFailure(maxRetryCount: databaseOptions.MaxRetryCount)
-                    .CommandTimeout(commandTimeout: databaseOptions.CommandTimeout);
-            })
+            .UseInMemoryDatabase(
+                databaseName: "MyBookStore",
+                inMemoryOptionsAction: actions => actions.EnableNullChecks())
             .EnableDetailedErrors(detailedErrorsEnabled: databaseOptions.EnableDetailedErrors)
             .EnableSensitiveDataLogging(databaseOptions.EnableSensitiveDataLogging);
     })
@@ -38,7 +35,8 @@ services
         .AllowAnyOrigin()
         .AllowAnyHeader()
         .AllowAnyMethod()))
-    .AddControllers();
+    .AddControllers()
+    .AddMvcOptions(setupAction: options => options.SuppressAsyncSuffixInActionNames = false);
 
 var app = builder.Build();
 
